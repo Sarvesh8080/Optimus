@@ -1,3 +1,7 @@
+from datetime import datetime
+from optimus.tools.apps import open_application
+
+
 def show_banner():
     print("=" * 40)
     print("        OPTIMUS AI ASSISTANT")
@@ -16,31 +20,50 @@ def startup():
 def listen():
     return input("\nYou: ")
 
-from datetime import datetime
-from optimus.tools.apps import open_application
+
 
 def get_time():
     return datetime.now().strftime("%I:%M %p")
 
 
-def think(command):
+def get_intent(command):
     command = command.lower().strip()
 
-    if "hello" in command:
-        return "Hello, Sarvesh."
-
-    elif "how are you" in command:
-        return "I'm functioning normally."
-
-    elif "what is your name" in command or "who are you" in command:
-        return "I am Optimus."
+    if "open notepad" in command:
+        return "open_notepad"
 
     elif "time" in command:
-        return "The current time is " + get_time()
-    
-    elif "open notepad" in command:
+        return "get_time"
+
+    elif "hello" in command:
+        return "greeting"
+
+    elif "how are you" in command:
+        return "status"
+
+    elif "what is your name" in command or "who are you" in command:
+        return "identity"
+
+    else:
+        return "unknown"
+
+
+def execute_intent(intent):
+    if intent == "open_notepad":
         open_application("notepad.exe")
         return "Opening Notepad."
+
+    elif intent == "get_time":
+        return "The current time is " + get_time()
+
+    elif intent == "greeting":
+        return "Hello, Sarvesh."
+
+    elif intent == "status":
+        return "I'm functioning normally."
+
+    elif intent == "identity":
+        return "I am Optimus."
 
     else:
         return "I don't understand that command yet."
@@ -60,7 +83,8 @@ def main():
             speak("Shutting down.")
             break
 
-        response = think(command)
+        intent = get_intent(command)
+        response = execute_intent(intent)
         speak(response)
 
 
