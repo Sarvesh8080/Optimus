@@ -44,7 +44,6 @@ def main():
         print("\nWaiting for wake word...")
 
         command = wait_for_wake_word()
-        print("Command sent to router:", repr(command))
 
         if not command:
             speak("Yes?")
@@ -60,8 +59,6 @@ def main():
 
         intent, target = get_intent(command)
 
-        print("Intent:", repr(intent))
-        print("Target:", repr(target))
 
         response = execute_intent(intent, target)
         speak(response)
