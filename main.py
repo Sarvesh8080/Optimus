@@ -30,42 +30,34 @@ def get_intent(command):
     command = command.lower().strip()
 
 
-    if "open chrome" in command:
-        return "open_chrome"
-
-    elif "open notepad" in command:
-        return "open_notepad"
-
+    if command.startswith("open "):
+        app_name = command.removeprefix("open ").strip()
+        return "open_application" , app_name
+    
     elif "time" in command:
-        return "get_time"
+        return "get_time" , None
 
     elif "hello" in command:
-        return "greeting"
+        return "greeting" , None
 
     elif "how are you" in command:
-        return "status"
+        return "status" , None
 
     elif "what is your name" in command or "who are you" in command:
-        return "identity"
+        return "identity" , None
 
     else:
-        return "unknown"
+        return "unknown" , None
 
 
-def execute_intent(intent):
-    if intent == "open_chrome":
-        success = open_application("chrome")
+def execute_intent(intent, app_name=None):
+
+    if intent == "open_application":
+        success = open_application(app_name)
         if success:
-            return "Opening Chrome."
+            return "Opening " + app_name + "."
         else:
-            return "Failed to open Chrome."
-
-    elif intent == "open_notepad":
-        success = open_application("notepad")
-        if success:
-            return "Opening Notepad."
-        else:
-            return "Failed to open Notepad."
+            return "I couldn't find " + app_name + ""
 
     elif intent == "get_time":
         return "The current time is " + get_time()
@@ -104,8 +96,8 @@ def main():
             speak("Shutting down.")
             break
 
-        intent = get_intent(command)
-        response = execute_intent(intent)
+        intent, app_name = get_intent(command)
+        response = execute_intent(intent, app_name)
         speak(response)
 
 
