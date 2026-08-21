@@ -1,5 +1,10 @@
 from optimus.router.intent import get_intent
 from optimus.router.executor import execute_intent
+from optimus.voice.tts import speak_text
+
+def speak(response):
+    print("\nOptimus:", response)
+    speak_text(response)
 
 
 def show_banner():
@@ -19,11 +24,6 @@ def startup():
 
 def listen():
     return input("\nYou: ")
-
-
-def speak(response):
-    print("\nOptimus:", response)
-
 
 def main():
     show_banner()
