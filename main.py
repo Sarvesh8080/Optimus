@@ -29,7 +29,11 @@ def get_time():
 def get_intent(command):
     command = command.lower().strip()
 
-    if "open notepad" in command:
+
+    if "open chrome" in command:
+        return "open_chrome"
+
+    elif "open notepad" in command:
         return "open_notepad"
 
     elif "time" in command:
@@ -49,9 +53,19 @@ def get_intent(command):
 
 
 def execute_intent(intent):
-    if intent == "open_notepad":
-        open_application("notepad.exe")
-        return "Opening Notepad."
+    if intent == "open_chrome":
+        success = open_application("chrome")
+        if success:
+            return "Opening Chrome."
+        else:
+            return "Failed to open Chrome."
+
+    elif intent == "open_notepad":
+        success = open_application("notepad")
+        if success:
+            return "Opening Notepad."
+        else:
+            return "Failed to open Notepad."
 
     elif intent == "get_time":
         return "The current time is " + get_time()
@@ -61,6 +75,13 @@ def execute_intent(intent):
 
     elif intent == "status":
         return "I'm functioning normally."
+
+    elif intent == "open_chrome":
+        success = open_application("chrome")
+        if success:
+            return "Opening Chrome."
+        else:
+            return "Failed to open Chrome."
 
     elif intent == "identity":
         return "I am Optimus."
