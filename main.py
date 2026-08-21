@@ -1,4 +1,3 @@
-
 from optimus.router.intent import get_intent
 from optimus.router.executor import execute_intent
 
