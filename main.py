@@ -17,7 +17,7 @@ def listen():
     return input("\nYou: ")
 
 from datetime import datetime
-from optimus.tools.apps import open_notepad
+from optimus.tools.apps import open_application
 
 def get_time():
     return datetime.now().strftime("%I:%M %p")
@@ -39,7 +39,7 @@ def think(command):
         return "The current time is " + get_time()
     
     elif "open notepad" in command:
-        open_notepad()
+        open_application("notepad.exe")
         return "Opening Notepad."
 
     else:

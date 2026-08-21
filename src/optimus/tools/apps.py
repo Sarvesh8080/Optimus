@@ -1,4 +1,5 @@
 import subprocess
 
-def open_notepad():
-    subprocess.Popen(["notepad.exe"])
+
+def open_application(application):
+    subprocess.Popen([application])
