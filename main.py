@@ -1,6 +1,16 @@
 from optimus.router.intent import get_intent
 from optimus.router.executor import execute_intent
 from optimus.voice.tts import speak_text
+from optimus.voice.stt import listen_from_microphone
+
+def listen_voice():
+    command = listen_from_microphone()
+
+    if command is None:
+        return ""
+
+    print("\nYou (voice):", command)
+    return command
 
 def speak(response):
     print("\nOptimus:", response)
@@ -30,7 +40,10 @@ def main():
     startup()
 
     while True:
-        command = listen()
+        command = listen_voice()
+        
+        if not command:
+            continue
 
         if command.lower() == "exit":
             speak("Shutting down.")
