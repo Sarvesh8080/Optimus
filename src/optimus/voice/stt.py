@@ -5,6 +5,7 @@ import wave
 
 import pyaudio
 import speech_recognition as sr
+import optimus.voice.state as voice_state
 
 
 DEVICE_INDEX = 17
@@ -22,6 +23,9 @@ recognizer = sr.Recognizer()
 
 
 def listen_from_microphone():
+    if voice_state.is_speaking:
+     return None
+
     audio = pyaudio.PyAudio()
 
     stream = audio.open(
