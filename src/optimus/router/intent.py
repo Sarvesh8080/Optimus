@@ -1,10 +1,52 @@
 def get_intent(command):
     command = command.lower().strip()
 
-    if command in {"open google", "open youtube", "open github", "open stackoverflow", "open reddit", "open twitter", "open facebook", "open linkedin", "open instagram"}:
+    if command.startswith("search google for "):
+        query = command.removeprefix("search google for ").strip()
+        return "search_google", query
+
+    elif command.startswith("search youtube for "):
+        query = command.removeprefix("search youtube for ").strip()
+        return "search_youtube", query
+
+    elif command.startswith("search stackoverflow for "):
+        query = command.removeprefix("search stackoverflow for ").strip()
+        return "search_stackoverflow", query
+
+    elif command.startswith("search reddit for "):
+        query = command.removeprefix("search reddit for ").strip()
+        return "search_reddit", query
+
+    elif command.startswith("search twitter for "):
+        query = command.removeprefix("search twitter for ").strip()
+        return "search_twitter", query
+
+    elif command.startswith("search facebook for "):
+        query = command.removeprefix("search facebook for ").strip()
+        return "search_facebook", query
+
+    elif command.startswith("search linkedin for "):
+        query = command.removeprefix("search linkedin for ").strip()
+        return "search_linkedin", query
+
+    elif command.startswith("search instagram for "):
+        query = command.removeprefix("search instagram for ").strip()
+        return "search_instagram", query
+
+    elif command in {
+        "open google",
+        "open youtube",
+        "open github",
+        "open stackoverflow",
+        "open reddit",
+        "open twitter",
+        "open facebook",
+        "open linkedin",
+        "open instagram",
+    }:
         website_name = command.removeprefix("open ").strip()
         return "open_website", website_name
-    
+
     elif command.startswith("open "):
         app_name = command.removeprefix("open ").strip()
         return "open_application", app_name
@@ -23,25 +65,3 @@ def get_intent(command):
 
     else:
         return "unknown", None
-
-    def test_open_youtube():
-        assert get_intent("open youtube") == ("open_website", "youtube")
-
-    def test_open_github():
-        assert get_intent("open github") == ("open_website", "github")
-    def test_open_stackoverflow():
-        assert get_intent("open stackoverflow") == ("open_website", "stackoverflow")
-    def test_open_reddit():
-        assert get_intent("open reddit") == ("open_website", "reddit")
-    def test_open_twitter():
-        assert get_intent("open twitter") == ("open_website", "twitter")
-    def test_open_facebook():
-        assert get_intent("open facebook") == ("open_website", "facebook")
-    def test_open_linkedin():
-        assert get_intent("open linkedin") == ("open_website", "linkedin")  
-    def test_open_instagram():
-        assert get_intent("open instagram") == ("open_website", "instagram")    
-    def test_open_chrome():
-        assert get_intent("open chrome") == ("open_application", "chrome")
-    def test_open_calculator():
-        assert get_intent("open calculator") == ("open_application", "calculator")        
