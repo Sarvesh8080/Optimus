@@ -1,4 +1,6 @@
+import audioop
 import io
+import time
 import wave
 
 import pyaudio
@@ -10,7 +12,11 @@ RATE = 48000
 CHANNELS = 2
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
-DURATION = 5
+
+START_THRESHOLD = 500
+SILENCE_THRESHOLD = 350
+SILENCE_DURATION = 1.0
+MAX_RECORD_SECONDS = 10
 
 recognizer = sr.Recognizer()
 
@@ -27,13 +33,38 @@ def listen_from_microphone():
         frames_per_buffer=CHUNK,
     )
 
-    print("Recording for 5 seconds... speak now.")
+    print("Waiting for speech...")
 
     frames = []
+    recording = False
+    silence_started = None
+    start_time = time.time()
 
-    for _ in range(int(RATE / CHUNK * DURATION)):
+    while True:
         data = stream.read(CHUNK, exception_on_overflow=False)
-        frames.append(data)
+
+        volume = audioop.rms(data, 2)
+
+        if not recording:
+            if volume >= START_THRESHOLD:
+                print("Listening...")
+                recording = True
+                frames.append(data)
+
+        else:
+            frames.append(data)
+
+            if volume < SILENCE_THRESHOLD:
+                if silence_started is None:
+                    silence_started = time.time()
+
+                elif time.time() - silence_started >= SILENCE_DURATION:
+                    break
+            else:
+                silence_started = None
+
+            if time.time() - start_time >= MAX_RECORD_SECONDS:
+                break
 
     stream.stop_stream()
     stream.close()
@@ -41,7 +72,7 @@ def listen_from_microphone():
     sample_width = audio.get_sample_size(FORMAT)
     audio.terminate()
 
-    print("Recording finished. Recognizing...")
+    print("Recognizing...")
 
     wav_buffer = io.BytesIO()
 
