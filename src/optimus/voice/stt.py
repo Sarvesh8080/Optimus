@@ -1,11 +1,10 @@
 import audioop
-import io
+import tempfile
 import time
 import wave
 
 import pyaudio
-import speech_recognition as sr
-import optimus.voice.state as voice_state
+from faster_whisper import WhisperModel
 
 
 DEVICE_INDEX = 17
@@ -14,18 +13,19 @@ CHANNELS = 2
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 
-START_THRESHOLD = 500
+START_THRESHOLD = 300
 SILENCE_THRESHOLD = 350
 SILENCE_DURATION = 1.0
 MAX_RECORD_SECONDS = 10
 
-recognizer = sr.Recognizer()
+model = WhisperModel(
+    "base.en",
+    device="cpu",
+    compute_type="int8",
+)
 
 
 def listen_from_microphone():
-    if voice_state.is_speaking:
-     return None
-
     audio = pyaudio.PyAudio()
 
     stream = audio.open(
@@ -54,6 +54,7 @@ def listen_from_microphone():
                 print("Listening...")
                 recording = True
                 frames.append(data)
+                start_time = time.time()
 
         else:
             frames.append(data)
@@ -76,28 +77,33 @@ def listen_from_microphone():
     sample_width = audio.get_sample_size(FORMAT)
     audio.terminate()
 
-    print("Recognizing...")
+    with tempfile.NamedTemporaryFile(
+        suffix=".wav",
+        delete=False,
+    ) as temp_file:
+        temp_path = temp_file.name
 
-    wav_buffer = io.BytesIO()
-
-    with wave.open(wav_buffer, "wb") as wav:
+    with wave.open(temp_path, "wb") as wav:
         wav.setnchannels(CHANNELS)
         wav.setsampwidth(sample_width)
         wav.setframerate(RATE)
         wav.writeframes(b"".join(frames))
 
-    wav_buffer.seek(0)
+    print("Recognizing locally...")
 
-    with sr.AudioFile(wav_buffer) as source:
-        recorded_audio = recognizer.record(source)
+    segments, _ = model.transcribe(
+        temp_path,
+        language="en",
+    )
 
-    try:
-        return recognizer.recognize_google(recorded_audio)
+    text = " ".join(
+        segment.text.strip()
+        for segment in segments
+    ).strip()
 
-    except sr.UnknownValueError:
-        print("Could not understand audio.")
+
+
+    if not text:
         return None
 
-    except sr.RequestError as error:
-        print("Recognition service error:", error)
-        return None
+    return text
