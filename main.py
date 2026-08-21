@@ -2,6 +2,7 @@ from optimus.router.intent import get_intent
 from optimus.router.executor import execute_intent
 from optimus.voice.tts import speak_text
 from optimus.voice.stt import listen_from_microphone
+from optimus.voice.wake import wait_for_wake_word
 
 def listen_voice():
     command = listen_from_microphone()
@@ -40,17 +41,29 @@ def main():
     startup()
 
     while True:
-        command = listen_voice()
-        
+        print("\nWaiting for wake word...")
+
+        command = wait_for_wake_word()
+        print("Command sent to router:", repr(command))
+
         if not command:
-            continue
+            speak("Yes?")
+
+            command = listen_voice()
+
+            if not command:
+                continue
 
         if command.lower() == "exit":
             speak("Shutting down.")
             break
 
-        intent, app_name = get_intent(command)
-        response = execute_intent(intent, app_name)
+        intent, target = get_intent(command)
+
+        print("Intent:", repr(intent))
+        print("Target:", repr(target))
+
+        response = execute_intent(intent, target)
         speak(response)
 
 
